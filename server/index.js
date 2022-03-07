@@ -8,6 +8,8 @@ app.use(cors());
 
 app.use(express.json()); // When we want to be able to accept JSON.
 
+const users = [];
+
 app.get("/api/compliment", (req, res) => {
   const compliments = ["Gee, you're a smart cookie!",
 					 "Cool shirt!",
@@ -37,48 +39,39 @@ app.get("/api/fortune", (req, res) => {
   res.status(200).send(randomfortune);
 })
 
-app.get("/api/achievements", (req, res) => {
-  const achievement = ["I have Been to 4 continents.",
-           "I have been around 35 states!",
-           "I have read over 300 books.", 
-           "I will somday master this.", 
-  ];
+app.post("/api/user", (req, res) => {
+  console.log(req.body)
+  const {newUser} = req.body
 
-  let randomIndex = Math.floor(Math.random() * achievement.length);
-  let randomAchievements = achievement[randomIndex];
-
-  res.status(200).send(randomAchievements);
+  users.push(newUser)
+  res.status(200).send(users)
 })
 
-app.post('/api/users', (req, res) => {
-  let { username, firstName, lastName } = req.body
+app.delete("/api/delete/:id", (req, res) => {
+  console.log(req.params)
 
-  if (!username || !firstName || !lastName) {
-    res.status(400).send('Error missing info.')
-  } else {
-    userDatabase.push(req.body) 
-    res.status(200).send('successfull.')
-  }
+  if(+req.params.id) {
+users.splice(req.params.id, 1)
+res.status(200).send(users)
+}else{
+  res.status(400).send("No Number")
+}
 })
 
+app.put('/api/update/:id', (req, res) => {
+  console.log(req.params)
+  console.log(req.body)
 
-app.get("/api/panic", (req, res) => {
-  const panic = ["I worked harder than it looks!",
-					 "Post took me soooo long and its still not working right!",
-					 "Hopefully I can get more time to work on this.",
-           "I felt so good about this before I sat down.",
-           "I know I failed this one I will study and work harder."
-  ];
+  const {userChange} = req.body
+  const editIndex = +req.params.id
 
+  users[editIndex] = editUser
 
- 
-  let randomIndex = Math.floor(Math.random() * panic.length);
-  let randomPanic = panic[randomIndex];
-
-  res.status(200).send(randomPanic);
-
+  res.status(200).send(users)
 })
 
 
 
 app.listen(4040, () => console.log("Server running on 4040"));
+
+
